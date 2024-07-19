@@ -1,82 +1,87 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <locale.h>
 
-// Dicionario
+// Registro para objeto dicionario;
 typedef struct
 {
 	char palavra[21];
 	char definicao[51];
 } dicionario;
 
-// FERRAMENTA: verifica se strings são iguais (V,F)
-bool compararStr(const char palavra1[], const char palavra2[])
-{
-	int i = 0;
-	while((palavra1[i] == palavra2[i]) && (palavra1[i] != '\0') && (palavra2[i] != '\0'))
-	{	
+// Ferramenta para comparação de strings;
+bool comparaStr(char str1[], char str2[]){
+	int  i = 0;
+	while((str1[i] == str2[i]) && (str1[i] != '\0') && (str2[i] != '\0'))
+	{
 		i++;
 	}
 
- if(palavra1[i] == palavra2[i])
-	return true;
+	if(str1[i] == '\0' && str2[i] == '\0')
+		return true;
 
- else
-	return false;
+	else
+		return false;
 }
 
-// Procura a palavra no dicionario
-int procurarStr(const dicionario lingua[], const char procurar[],
-const int numDePalavras)
+// Função que percorre as palavras do dicionario em busca da palavra fornecida;
+int procuraNoDicionario(char palavra[], int tamDicionario, dicionario fonte[])
 {
 	int i = 0;
-	while(i<numDePalavras)
+	while(i<tamDicionario)
 	{
-		if(compararStr(procurar, lingua[i].palavra))
-			return i; // Retorna a posição do vetor com a palavra correta
+		if(comparaStr(palavra,fonte[i].palavra))
+			return i;
 
 		else
-			i++;	// Soma +1 e continua a procura	
+			i++;
 	}
- return -1; // Palavra não encontrada
+	return -1;
 }
 
-#define NUMERODEDEFINICOES 7
+// Número de palavras do dicionario;
+#define TAM 6
 
 int main(void)
 {
- char palavra[20] = {'\0'};
- int resultadoPesquisa;
+	setlocale(LC_ALL,"Portuguese");
 
- const dicionario portugues[NUMERODEDEFINICOES] =
- {{"amor","sentimento forte.\n"},
-	{"cenoura","comida laranja.\n"},
-	{"bolo","massa doce.\n"},
-	{"chocolate","doce feito de cacau.\n"},
-	{"maracuja","fruta silvestre.\n"},
-	{"peixe","fruto do mar.\n"},
-	{"sapo","animal verde.\n"}
- };
+	// Dicionario criado;
+	dicionario portugues[TAM] = 
+	{
+		{{"pão"},{"'massa fermentada com fungos passivos.'\n\n"}},
+		{{"cenoura"},{"'legume laranja.'\n\n"}},
+		{{"brocolis"},{"'vegetal verde.'\n\n"}},
+		{{"chocolate"},{"'doce feito de cacau.'\n\n"}},
+		{{"morango"},{"'fruta campeira silvestre.'\n\n"}},
+		{{"abacate"},{"'fruta verde.'\n\n"}}
+	};
+
+	// Entrada do usuário;
+	char prompt[20] = {'\0'};
 
  while(1)
  {
- printf("Digite uma palavra: ");
- scanf("%s", palavra);
+	 printf("Digite a palavra\n$");
+	 scanf("%s", prompt);
 
- if(compararStr(palavra,"q"))
- {
- 	printf("\nFim\n");
-  return 0;
+	 if(comparaStr(prompt,"q"))
+	 {
+	 	printf("\n### Fim ###\n");
+		exit(EXIT_SUCCESS);
+   }
+
+   // Retorna o número do indice contendo a palavra;
+	 int state = procuraNoDicionario(prompt,TAM,portugues);
+
+	 // Retorna a definição da palavra;
+	 if(state != -1)
+		printf("%s", portugues[state].definicao);
+
+	 else
+		printf("\n**Palavra não existe.**\n\n");
  }
 
- resultadoPesquisa = procurarStr(portugues, palavra, NUMERODEDEFINICOES);
-
- if(resultadoPesquisa!= -1)
-	printf("%s\n", portugues[resultadoPesquisa].definicao);
- 
- else
-	printf("\nPalavra nao encontrada\n");
- }
-
- return 0;
+return EXIT_SUCCESS;
 }
-
